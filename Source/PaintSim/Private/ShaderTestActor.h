@@ -24,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	float PercentageValue = 0;
-	UMeshComponent* ActorMeshComponent;
-	UMaterialInstanceDynamic* NewMaterial;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Painting") UMaterialInterface* PaintMaterial;
+
+private:
+	UPROPERTY() UMaterialInstanceDynamic* DynamicPaintMaterialInstance;
 };
