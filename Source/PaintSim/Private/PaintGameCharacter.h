@@ -39,12 +39,14 @@ private:
 	UFUNCTION() void MoveCharacter(const FInputActionValue& value);
 	UFUNCTION() void Look(const FInputActionValue& value);
 	UFUNCTION() void Paint(const FInputActionValue& value);
+	UFUNCTION() void PaintCharacterJump(const FInputActionValue& value);
 
 	// Input
 	UPROPERTY(EditAnywhere, Category="Input") UInputMappingContext* MappingContext;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* PaintAction;
+	UPROPERTY(EditAnywhere, Category="Input") UInputAction* JumpAction;
 
 	// Camera
 	UPROPERTY(VisibleAnywhere, Category="Input") UCameraComponent* GameCamera;

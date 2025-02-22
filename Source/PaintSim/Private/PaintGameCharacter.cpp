@@ -5,6 +5,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "MovieSceneTracksComponentTypes.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,9 +17,6 @@ APaintGameCharacter::APaintGameCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GameCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Game Camera"));
-	GameCamera->bUsePawnControlRotation = false;
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -30,9 +28,8 @@ void APaintGameCharacter::BeginPlay()
 	{
 		CameraManager->StartCameraFade(1.25f, 0.0f, 3.0f, FLinearColor::Black, false, false);
 	}
-
-	//GetMesh();
-	//AttachToComponent
+	
+	
 }
 
 void APaintGameCharacter::PawnClientRestart()
@@ -46,6 +43,11 @@ void APaintGameCharacter::PawnClientRestart()
 			subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
+
+	//Attach camera to mesh
+	GameCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	GameCamera->bUsePawnControlRotation = true;
+	bUseControllerRotationPitch = true;
 }
 
 // Called every frame
@@ -65,7 +67,8 @@ void APaintGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		//Action Binds
 		enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::MoveCharacter);
 		enhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Look);
-		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Paint);
+		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Started, this, &APaintGameCharacter::Paint);
+		enhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::PaintCharacterJump);
 	}
 }
 
@@ -98,6 +101,30 @@ void APaintGameCharacter::Look(const FInputActionValue& value)
 
 void APaintGameCharacter::Paint(const FInputActionValue& value)
 {
-	return;
+	FHitResult Hit;
+	//FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	TraceParams.bTraceComplex = true;
+	TraceParams.bReturnFaceIndex = true;
+	
+
+	//GetWorld()->LineTraceSingleByChannel(OUT Hit, GameCamera->GetComponentLocation(), GetCameraForwardDir() * 100, ECollisionChannel::ECC_EngineTraceChannel1, TraceParams);
+	bool paintableObjectHit = GetWorld()->LineTraceSingleByChannel(Hit, GameCamera->GetComponentLocation(), GetCameraForwardDir() * 100000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
+	//AActor* ActorHit = Hit.GetActor();
+	if (paintableObjectHit && Hit.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
+
+		FVector2D UV(0.0f, 0.0f);
+		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
+
+		UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f"), UV.X, UV.Y);
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(ActorHit->GetName()));
+}
+
+void APaintGameCharacter::PaintCharacterJump(const FInputActionValue& value)
+{
+	APaintGameCharacter::Jump();
 }
 
