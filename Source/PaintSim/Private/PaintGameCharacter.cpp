@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+//TODO: Create Dynamic Material Instance for hit materials
 
 #include "PaintGameCharacter.h"
 
@@ -117,7 +118,22 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 
 		FVector2D UV(0.0f, 0.0f);
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
-
+		
+		if (UMaterialInterface* hitMaterial = Hit.GetComponent()->GetMaterial(0))
+		{
+			if (UMaterialInstanceDynamic* HitDIM = Cast<UMaterialInstanceDynamic>(hitMaterial))
+			{
+				HitDIM->SetVectorParameterValue("CustomUV", FVector(UV.X, UV.Y, 0.0f));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to set parameter"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get Material"));
+		}
 		UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f"), UV.X, UV.Y);
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(ActorHit->GetName()));
