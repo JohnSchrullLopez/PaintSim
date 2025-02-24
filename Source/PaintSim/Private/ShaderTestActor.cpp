@@ -20,7 +20,6 @@ void AShaderTestActor::BeginPlay()
 {
 	Super::BeginPlay();
 	DynamicPaintMaterialInstance = UMaterialInstanceDynamic::Create(PaintMaterial, this);
-	//DynamicPaintMaterialInstance->SetScalarParameterValue("PercentCompletion", 0.5f);
 	GetComponentByClass<UStaticMeshComponent>()->SetMaterial(0, DynamicPaintMaterialInstance);
 }
 
@@ -29,8 +28,8 @@ void AShaderTestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DynamicPaintMaterialInstance->GetScalarParameterValue(FName("PercentCompletion"), PercentageValue);
-	
-	UE_LOG(LogTemp, Warning, TEXT("TestValue: %f"), PercentageValue);
+	// DynamicPaintMaterialInstance->GetScalarParameterValue(FName("PercentCompletion"), PercentageValue);
+	//
+	// UE_LOG(LogTemp, Warning, TEXT("TestValue: %f"), PercentageValue);
 }
 

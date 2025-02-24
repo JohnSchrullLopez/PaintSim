@@ -68,7 +68,7 @@ void APaintGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		//Action Binds
 		enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::MoveCharacter);
 		enhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Look);
-		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Started, this, &APaintGameCharacter::Paint);
+		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Paint);
 		enhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::PaintCharacterJump);
 	}
 }
@@ -103,26 +103,36 @@ void APaintGameCharacter::Look(const FInputActionValue& value)
 void APaintGameCharacter::Paint(const FInputActionValue& value)
 {
 	FHitResult Hit;
-	//FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	
+	//Trace Parameters 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 	TraceParams.bTraceComplex = true;
 	TraceParams.bReturnFaceIndex = true;
-	
+	TraceParams.TraceTag = FName("DebugRay");
 
-	//GetWorld()->LineTraceSingleByChannel(OUT Hit, GameCamera->GetComponentLocation(), GetCameraForwardDir() * 100, ECollisionChannel::ECC_EngineTraceChannel1, TraceParams);
-	bool paintableObjectHit = GetWorld()->LineTraceSingleByChannel(Hit, GameCamera->GetComponentLocation(), GetCameraForwardDir() * 100000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
-	//AActor* ActorHit = Hit.GetActor();
+	GetWorld()->DebugDrawTraceTag = FName("DebugRay");
+
+	//Get Camera View Vector
+	FRotator rotation(GameCamera->GetComponentToWorld().GetRotation());
+	FVector rayDirection = FRotationMatrix(rotation).GetScaledAxis(EAxis::X);
+
+	bool paintableObjectHit = GetWorld()->LineTraceSingleByChannel(Hit, GameCamera->GetComponentLocation(), rayDirection * 100000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
+
 	if (paintableObjectHit && Hit.GetActor())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
 
+		//Find and store UV from collision
 		FVector2D UV(0.0f, 0.0f);
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
-		
+
+		//Get Material from collision
 		if (UMaterialInterface* hitMaterial = Hit.GetComponent()->GetMaterial(0))
 		{
+			//Check if material is dynamic instance
 			if (UMaterialInstanceDynamic* HitDIM = Cast<UMaterialInstanceDynamic>(hitMaterial))
 			{
+				//Send collision UV to shader
 				HitDIM->SetVectorParameterValue("CustomUV", FVector(UV.X, UV.Y, 0.0f));
 			}
 			else
@@ -136,7 +146,6 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 		}
 		UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f"), UV.X, UV.Y);
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(ActorHit->GetName()));
 }
 
 void APaintGameCharacter::PaintCharacterJump(const FInputActionValue& value)
