@@ -19,8 +19,8 @@ AShaderTestActor::AShaderTestActor()
 void AShaderTestActor::BeginPlay()
 {
 	Super::BeginPlay();
-	DynamicPaintMaterialInstance = UMaterialInstanceDynamic::Create(PaintMaterial, this);
-	GetComponentByClass<UStaticMeshComponent>()->SetMaterial(0, DynamicPaintMaterialInstance);
+	//DynamicPaintMaterialInstance = UMaterialInstanceDynamic::Create(PaintMaterial, this);
+	//GetComponentByClass<UStaticMeshComponent>()->SetMaterial(0, DynamicPaintMaterialInstance);
 }
 
 // Called every frame
