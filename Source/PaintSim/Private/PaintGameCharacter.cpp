@@ -6,7 +6,6 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "MovieSceneTracksComponentTypes.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -120,7 +119,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 
 	if (paintableObjectHit && Hit.GetActor())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
+		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
 
 		//Find and store UV from collision
 		FVector2D UV(0.0f, 0.0f);
@@ -137,14 +136,14 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Failed to set parameter"));
+				//UE_LOG(LogTemp, Warning, TEXT("Failed to set parameter"));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to get Material"));
+			//UE_LOG(LogTemp, Warning, TEXT("Failed to get Material"));
 		}
-		UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f"), UV.X, UV.Y);
+		//UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f"), UV.X, UV.Y);
 	}
 }
 
