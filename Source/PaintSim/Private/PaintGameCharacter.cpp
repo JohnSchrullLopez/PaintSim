@@ -124,6 +124,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 		//Find and store UV from collision
 		FVector2D UV(0.0f, 0.0f);
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
+		HitUV = UV;
 
 		//Get Material from collision
 		if (UMaterialInterface* hitMaterial = Hit.GetComponent()->GetMaterial(0))
@@ -132,7 +133,8 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			if (UMaterialInstanceDynamic* HitDIM = Cast<UMaterialInstanceDynamic>(hitMaterial))
 			{
 				//Send collision UV to shader
-				HitDIM->SetVectorParameterValue("CustomUV", FVector(UV.X, UV.Y, 0.0f));
+				//UE_LOG(LogTemp, Warning, TEXT("X: %s"), *HitDIM->GetName());
+				//HitDIM->SetVectorParameterValue("CustomUV", FVector(HitUV.X, HitUV.Y, 0.0f));
 			}
 			else
 			{
