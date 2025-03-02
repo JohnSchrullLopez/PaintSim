@@ -6,6 +6,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "PaintableActorComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -119,12 +120,17 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 
 	if (paintableObjectHit && Hit.GetActor())
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
-
 		//Find and store UV from collision
 		FVector2D UV(0.0f, 0.0f);
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
 		HitUV = UV;
+		
+		if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
+		{
+			//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
+			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV);
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
 
 		//Get Material from collision
 		if (UMaterialInterface* hitMaterial = Hit.GetComponent()->GetMaterial(0))
