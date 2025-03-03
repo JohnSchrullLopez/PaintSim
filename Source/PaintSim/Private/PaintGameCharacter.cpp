@@ -128,7 +128,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 		if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
 		{
 			//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV);
+			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit_Implementation(UV);
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
 

@@ -19,10 +19,24 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UFUNCTION() void InitializeComponent() override;
+
+	UPROPERTY() UTextureRenderTarget2D* RenderTarget;
+	UPROPERTY() UMaterialInstanceDynamic* PaintableObjectMaterial;
+	UPROPERTY() UMaterialInstanceDynamic* PaintMaterial;
+	UPROPERTY() FVector2D HitUV;
+	UPROPERTY() UStaticMeshComponent* Mesh;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable) void OnPaintHit(FVector2D HitUV);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable) void OnPaintHit(FVector2D UV);
+	
+	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
+
+	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
+	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
 };
