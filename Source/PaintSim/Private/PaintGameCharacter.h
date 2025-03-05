@@ -32,7 +32,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	UPROPERTY(BlueprintReadWrite) FVector2D HitUV = FVector2D::ZeroVector;
+	//UPROPERTY(BlueprintReadWrite) FVector2D HitUV_L = FVector2D::ZeroVector;
+	//UPROPERTY(BlueprintReadWrite) FVector2D HitUV_R = FVector2D::ZeroVector;
 
 private:
 	UFUNCTION() FVector GetCameraForwardDir() const;

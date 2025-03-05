@@ -4,7 +4,9 @@
 #include "PaintableActorComponent.h"
 
 #include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/BlueprintTypeConversions.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values for this component's properties
 UPaintableActorComponent::UPaintableActorComponent()
@@ -72,7 +74,17 @@ void UPaintableActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UPaintableActorComponent::OnPaintHit_Implementation(FVector2D UV)
+void UPaintableActorComponent::OnPaintHit(FVector2D UV_L, FVector2D UV_R)
 {
-	UE_LOG(LogTemp, Warning, TEXT("C++ FUNCTION CALLED"));
+	if (IsValid(RenderTarget) && IsValid(PaintableObjectMaterial))
+	{
+		PaintMaterial->SetVectorParameterValue("UV_L", FVector(UV_L.X, UV_L.Y, 0.0f));
+		PaintMaterial->SetVectorParameterValue("UV_R", FVector(UV_R.X, UV_R.Y, 0.0f));
+		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
+		UE_LOG(LogTemp, Warning, TEXT("L: %f		R: %f"), UV_L.X, UV_R.X);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MATERIAL NOT INITIALIZED"));
+	}
 }

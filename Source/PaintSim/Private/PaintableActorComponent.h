@@ -33,7 +33,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable) void OnPaintHit(FVector2D UV);
+	UFUNCTION() void OnPaintHit(FVector2D UV_L, FVector2D UV_R);
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
 

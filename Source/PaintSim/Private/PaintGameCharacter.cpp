@@ -114,21 +114,28 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 
 	//Get Camera View Vector
 	FRotator rotation(GameCamera->GetComponentToWorld().GetRotation());
-	FVector rayDirection = FRotationMatrix(rotation).GetScaledAxis(EAxis::X);
+	
+	FVector rayDirection_L = FRotationMatrix(rotation).GetScaledAxis(EAxis::X);
+	FVector rayDirection_R = FRotationMatrix(rotation).GetScaledAxis(EAxis::X);
 
-	bool paintableObjectHit = GetWorld()->LineTraceSingleByChannel(Hit, GameCamera->GetComponentLocation(), rayDirection * 100000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
+	//Find and store UV from collision
+	FVector2D UV_L(0.0f, 0.0f);
+	FVector2D UV_R(0.0f, 0.0f);
 
-	if (paintableObjectHit && Hit.GetActor())
+	FVector cameraLocation = GameCamera->GetComponentLocation();
+	
+	bool Ray_L = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, rayDirection_L * 1000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
+	UGameplayStatics::FindCollisionUV(Hit, 0, UV_L);
+	
+	bool Ray_R = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, rayDirection_R * 1000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
+	UGameplayStatics::FindCollisionUV(Hit, 0, UV_R);
+
+	if (Ray_L && Ray_R && Hit.GetActor())
 	{
-		//Find and store UV from collision
-		FVector2D UV(0.0f, 0.0f);
-		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
-		HitUV = UV;
-		
 		if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
 		{
 			//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit_Implementation(UV);
+			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_L, UV_R);
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(Hit.GetActor()->GetName()));
 
