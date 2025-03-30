@@ -6,7 +6,10 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/BlueprintTypeConversions.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 // Sets default values for this component's properties
 UPaintableActorComponent::UPaintableActorComponent()
