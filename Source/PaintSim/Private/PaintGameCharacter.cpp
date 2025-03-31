@@ -23,6 +23,9 @@ APaintGameCharacter::APaintGameCharacter()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CAMERA INITIALIZED"));
 	}
+
+	RayWidth = 5.0f;
+	RayResolution = 10;
 }
 
 // Called when the game starts or when spawned
@@ -118,12 +121,13 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
 	FVector rayDirection_L = GameCamera->GetForwardVector().GetSafeNormal();
-	FVector rayDirection_R = rayDirection_L;
+	//FVector rayDirection_R = rayDirection_L;
 
-	rayDirection_L = rayDirection_L.RotateAngleAxis(3, GameCamera->GetUpVector());
-	rayDirection_R = rayDirection_R.RotateAngleAxis(-3, GameCamera->GetUpVector());
+	//rayDirection_L = rayDirection_L.RotateAngleAxis(-radius, GameCamera->GetUpVector());
+	//rayDirection_R = rayDirection_R.RotateAngleAxis(radius, GameCamera->GetUpVector());
 
 	//Find and store UV from collision
+	/*
 	FVector2D UV_L(0.0f, 0.0f);
 	FVector2D UV_R(0.0f, 0.0f);
 	
@@ -138,7 +142,34 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 		if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
 		{
 			//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_L, UV_R);
+			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_L);
+			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_R);
+		}
+	}
+	*/
+
+	FVector2D UV(0.0f, 0.0f);
+	bool Ray;
+	FVector rayDirection;
+	float offset = (RayWidth * 2) / 10;
+	
+	for (int i = 0; i < RayResolution; i++)
+	{
+		UV = FVector2D::ZeroVector;
+
+		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
+		
+		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
+		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
+
+		if (Ray && Hit.GetActor())
+		{
+			if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
+			{
+				//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
+				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV);
+				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->CalculatePercentPainted();
+			}	
 		}
 	}
 }

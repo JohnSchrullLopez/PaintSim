@@ -23,7 +23,7 @@ protected:
 
 	UFUNCTION() void InitializeComponent() override;
 
-	UPROPERTY() UTextureRenderTarget2D* RenderTarget;
+	UPROPERTY(VisibleAnywhere) UTextureRenderTarget2D* RenderTarget;
 	UPROPERTY() UMaterialInstanceDynamic* PaintableObjectMaterial;
 	UPROPERTY() UMaterialInstanceDynamic* PaintMaterial;
 	UPROPERTY() FVector2D HitUV;
@@ -33,10 +33,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION() void OnPaintHit(FVector2D UV_L, FVector2D UV_R);
+	UFUNCTION() void OnPaintHit(FVector2D UV);
+	UFUNCTION() float CalculatePercentPainted();
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
-
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
 };

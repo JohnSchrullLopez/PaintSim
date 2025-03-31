@@ -33,6 +33,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(EditAnywhere, Category = "Paint") float RayWidth;
+	UPROPERTY(EditAnywhere, Category = "Paint") uint8 RayResolution;
+
 private:
 	UFUNCTION() FVector GetCameraForwardDir() const;
 	UFUNCTION() FVector GetCameraRightDir() const;
