@@ -27,8 +27,8 @@ UPaintableActorComponent::UPaintableActorComponent()
 void UPaintableActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeComponent();
 	CompletionPercentID = FVector2D::ZeroVector;
+	InitializeComponent();
 	// ...
 	
 }
@@ -56,7 +56,10 @@ void UPaintableActorComponent::InitializeComponent()
 	{
 		RenderTarget->InitCustomFormat(512, 512, PF_B8G8R8A8, false);
 		RenderTarget->ClearColor = FColor::Black;
+		RenderTarget->MipGenSettings = TMGS_SimpleAverage;
+		RenderTarget->MipsSamplerFilter = TF_Trilinear;
 		RenderTarget->bAutoGenerateMips = true;
+
 		//RenderTarget->mip
 		RenderTarget->UpdateResourceImmediate(true);
 		UE_LOG(LogTemp, Warning, TEXT("RENDERTEXTURE INITIALIZED"));
@@ -69,10 +72,10 @@ void UPaintableActorComponent::InitializeComponent()
 	PaintMaterial = Mesh->CreateDynamicMaterialInstance(0, BasePaintMaterial);
 	Mesh->SetMaterial(0, PaintableObjectMaterial);
 
-	CompletionPercentID = PaintGameManager->RegisterPaintableObject(this);
+	SetID(PaintGameManager->RegisterPaintableObject(this));
 	PaintGameManager->GetPercentCompletionValue(CompletionPercentID);
 	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
-	UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), CompletionPercentID.X, CompletionPercentID.Y);
+	//UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), CompletionPercentID.X, CompletionPercentID.Y);
 	
 	UE_LOG(LogTemp, Warning, TEXT("INITIALIZATION SUCCESSFUL"));
 	
@@ -93,8 +96,7 @@ void UPaintableActorComponent::OnPaintHit(FVector2D UV)
 	{
 		PaintMaterial->SetVectorParameterValue("UV", FVector(UV.X, UV.Y, 0.0f));
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
-
-		PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
+		PaintGameManager->UpdateCompletionStateRT(this->CompletionPercentID, RenderTarget);
 	}
 	else
 	{

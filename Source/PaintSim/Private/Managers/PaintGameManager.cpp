@@ -62,10 +62,12 @@ void APaintGameManager::UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarg
 {
 	if (CompletionStateRT && CompletionMaterialInstance)
 	{
-		CompletionMaterialInstance->SetVectorParameterValue("ID", FVector(ID.X, ID.Y, 0));
+		UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), ID.X, ID.Y);
+		CompletionMaterialInstance->SetVectorParameterValue("ID", FVector4(ID.X, ID.Y, 0, 0));
 		CompletionMaterialInstance->SetScalarParameterValue("RTSize", CompletionStateRT->SizeX);
 		CompletionMaterialInstance->SetTextureParameterValue("ObjectMask", ObjectMask);
-		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), CompletionStateRT, CompletionMaterialInstance);	
+		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), CompletionStateRT, CompletionMaterialInstance);
+		UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), ID.X, ID.Y);
 	}
 }
 

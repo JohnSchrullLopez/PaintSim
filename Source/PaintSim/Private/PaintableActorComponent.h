@@ -37,12 +37,12 @@ public:
 	
 	UFUNCTION() void OnPaintHit(FVector2D UV);
 	UFUNCTION() float GetPercentPainted();
-	//FORCEINLINE void SetID(int ID) { CompletionPercentID = ID; }
+	FORCEINLINE void SetID(const FVector2D ID) { CompletionPercentID = ID; }
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
 	UPROPERTY(EditAnywhere, Category = "Paint") AActor* PaintGameManagerActor;
 	UPROPERTY(EditAnywhere, Category="Paint") APaintGameManager* PaintGameManager;
-	UPROPERTY() FVector2D CompletionPercentID;
+	UPROPERTY(VisibleAnywhere) FVector2D CompletionPercentID;
 };
