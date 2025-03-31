@@ -36,7 +36,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION() void OnPaintHit(FVector2D UV);
-	UFUNCTION() float CalculatePercentPainted();
+	UFUNCTION() float GetPercentPainted();
 	//FORCEINLINE void SetID(int ID) { CompletionPercentID = ID; }
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;

@@ -168,7 +168,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			{
 				//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
 				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV);
-				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->CalculatePercentPainted();
+				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->GetPercentPainted();
 			}	
 		}
 	}
