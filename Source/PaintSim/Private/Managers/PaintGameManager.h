@@ -25,13 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TTuple<int, int> RegisterPaintableObject(UPaintableActorComponent* PaintComponent);
-	UFUNCTION(BlueprintCallable) void UpdateCompletionStateRT(int ID, UTextureRenderTarget2D* ObjectMask);
+	FVector2D RegisterPaintableObject(UPaintableActorComponent* PaintComponent);
+	UFUNCTION(BlueprintCallable) void UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarget2D* ObjectMask);
+	UFUNCTION(BlueprintCallable) float GetPercentCompletionValue(FVector2D ID);
 
 	UPROPERTY(EditAnywhere, Category="Paint") UMaterial* CalculationMaterialBase;
 	UPROPERTY(EditAnywhere, Category="Paint") UTextureRenderTarget2D* CompletionStateRT;
 
 private:
-	int CompletionRTIndex = 0;
+	int CurrentID = 0;
 	UPROPERTY() UMaterialInstanceDynamic* CompletionMaterialInstance;
 };

@@ -3,6 +3,7 @@
 
 #include "Managers/PaintGameManager.h"
 
+#include "PaintableActorComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -13,7 +14,7 @@ APaintGameManager::APaintGameManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	CompletionRTIndex = 0;
+	CurrentID = 0;
 }
 
 // Called when the game starts or when spawned
@@ -21,9 +22,9 @@ void APaintGameManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CompletionStateRT->Filter = TF_Trilinear;
-	CompletionStateRT->MipsSamplerFilter = TF_Trilinear;
-	UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), CompletionStateRT, FLinearColor(1,1,1,1));
+	CompletionStateRT->Filter = TF_Nearest;
+	CompletionStateRT->MipsSamplerFilter = TF_Nearest;
+	UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), CompletionStateRT, FLinearColor(0,0,0,1));
 	
 	CompletionMaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), CalculationMaterialBase);
 
@@ -40,16 +41,36 @@ void APaintGameManager::Tick(float DeltaTime)
 
 }
 
-TTuple<int, int> APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* PaintComponent)
+FVector2D APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* PaintComponent)
 {
-	return TTuple<int, int>(0,0);
+	//Check if new ID is out of texture bounds
+	if (CurrentID > CompletionStateRT->SizeX * CompletionStateRT->SizeY)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ERROR: OUT OF BOUNDS. INCREASE RENDER TEXTURE SIZE"));
+		return FVector2D::ZeroVector;
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("%s registered"), *PaintComponent->GetName());
+
+	//Convert 1D ID value to 2D
+	FVector2D GeneratedID = FVector2D(CurrentID % CompletionStateRT->SizeX, std::floor(CurrentID / CompletionStateRT->SizeX));
+	CurrentID++;
+	return GeneratedID;
 }
 
-void APaintGameManager::UpdateCompletionStateRT(int ID, UTextureRenderTarget2D* ObjectMask)
+void APaintGameManager::UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarget2D* ObjectMask)
 {
 	if (CompletionStateRT && CompletionMaterialInstance)
 	{
+		CompletionMaterialInstance->SetVectorParameterValue("ID", FVector(ID.X, ID.Y, 0));
+		CompletionMaterialInstance->SetScalarParameterValue("RTSize", CompletionStateRT->SizeX);
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), CompletionStateRT, CompletionMaterialInstance);	
 	}
+}
+
+float APaintGameManager::GetPercentCompletionValue(FVector2D ID)
+{
+	FColor value = UKismetRenderingLibrary::ReadRenderTargetPixel(GetWorld(), CompletionStateRT, ID.X, ID.Y);
+	return value.R;
 }
 

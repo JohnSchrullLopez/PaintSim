@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "Managers/PaintGameManager.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
@@ -27,6 +28,7 @@ void UPaintableActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	InitializeComponent();
+	CompletionPercentID = FVector2D::ZeroVector;
 	// ...
 	
 }
@@ -46,6 +48,7 @@ void UPaintableActorComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	Mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
+	PaintGameManager = Cast<APaintGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APaintGameManager::StaticClass()));
 
 	//Render Target Init
 	RenderTarget = NewObject<UTextureRenderTarget2D>();
@@ -66,6 +69,11 @@ void UPaintableActorComponent::InitializeComponent()
 	PaintMaterial = Mesh->CreateDynamicMaterialInstance(0, BasePaintMaterial);
 	Mesh->SetMaterial(0, PaintableObjectMaterial);
 
+	CompletionPercentID = PaintGameManager->RegisterPaintableObject(this);
+	PaintGameManager->GetPercentCompletionValue(CompletionPercentID);
+	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
+	UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), CompletionPercentID.X, CompletionPercentID.Y);
+	
 	UE_LOG(LogTemp, Warning, TEXT("INITIALIZATION SUCCESSFUL"));
 	
 }

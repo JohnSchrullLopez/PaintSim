@@ -7,6 +7,8 @@
 #include "PaintableActorComponent.generated.h"
 
 
+class APaintGameManager;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
 class UPaintableActorComponent : public UActorComponent
 {
@@ -35,8 +37,12 @@ public:
 	
 	UFUNCTION() void OnPaintHit(FVector2D UV);
 	UFUNCTION() float CalculatePercentPainted();
+	//FORCEINLINE void SetID(int ID) { CompletionPercentID = ID; }
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
+	UPROPERTY(EditAnywhere, Category = "Paint") AActor* PaintGameManagerActor;
+	UPROPERTY(EditAnywhere, Category="Paint") APaintGameManager* PaintGameManager;
+	UPROPERTY() FVector2D CompletionPercentID;
 };
