@@ -28,9 +28,13 @@ public:
 	FVector2D RegisterPaintableObject(UPaintableActorComponent* PaintComponent);
 	UFUNCTION(BlueprintCallable) void UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarget2D* ObjectMask);
 	UFUNCTION(BlueprintCallable) float GetPercentCompletionValue(FVector2D ID);
+	
+	UFUNCTION() void AddRTToUpdatePool(UPaintableActorComponent* PaintComponent);
+	UFUNCTION() void ProcessRTPool();
 
 	UPROPERTY(EditAnywhere, Category="Paint") UMaterial* CalculationMaterialBase;
 	UPROPERTY(EditAnywhere, Category="Paint") UTextureRenderTarget2D* CompletionStateRT;
+	UPROPERTY() TArray<UPaintableActorComponent*> PaintedObjectsPool;
 
 private:
 	int CurrentID = 0;

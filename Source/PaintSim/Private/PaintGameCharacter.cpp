@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/PaintGameManager.h"
 
 // Sets default values
 APaintGameCharacter::APaintGameCharacter()
@@ -42,6 +43,7 @@ void APaintGameCharacter::BeginPlay()
 	GameCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 	GameCamera->bUsePawnControlRotation = true;
 	bUseControllerRotationPitch = true;
+	PaintGameManager = Cast<APaintGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APaintGameManager::StaticClass()));
 }
 
 void APaintGameCharacter::PawnClientRestart()
@@ -75,6 +77,7 @@ void APaintGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::MoveCharacter);
 		enhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Look);
 		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::Paint);
+		enhancedInputComponent->BindAction(PaintAction, ETriggerEvent::Completed, this, &APaintGameCharacter::TriggerRTUpdates);
 		enhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APaintGameCharacter::PaintCharacterJump);
 	}
 }
@@ -116,38 +119,11 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	TraceParams.bReturnFaceIndex = true;
 	TraceParams.TraceTag = FName("DebugRay");
 
-	GetWorld()->DebugDrawTraceTag = FName("DebugRay");
+	//GetWorld()->DebugDrawTraceTag = FName("DebugRay");
 
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
 	FVector rayDirection_L = GameCamera->GetForwardVector().GetSafeNormal();
-	//FVector rayDirection_R = rayDirection_L;
-
-	//rayDirection_L = rayDirection_L.RotateAngleAxis(-radius, GameCamera->GetUpVector());
-	//rayDirection_R = rayDirection_R.RotateAngleAxis(radius, GameCamera->GetUpVector());
-
-	//Find and store UV from collision
-	/*
-	FVector2D UV_L(0.0f, 0.0f);
-	FVector2D UV_R(0.0f, 0.0f);
-	
-	bool Ray_L = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection_L * 1000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
-	UGameplayStatics::FindCollisionUV(Hit, 0, UV_L);
-	
-	bool Ray_R = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection_R * 1000, ECC_WorldDynamic, TraceParams, FCollisionResponseParams());
-	UGameplayStatics::FindCollisionUV(Hit, 0, UV_R);
-
-	if (Ray_L && Hit.GetActor())
-	{
-		if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
-		{
-			//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_L);
-			Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV_R);
-		}
-	}
-	*/
-
 	FVector2D UV(0.0f, 0.0f);
 	bool Ray;
 	FVector rayDirection;
@@ -161,14 +137,16 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 		
 		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
-
-		if (Ray && Hit.GetActor())
+		AActor* HitActor = Hit.GetActor();
+		
+		if (Ray && HitActor)
 		{
-			if (Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>())
+			UPaintableActorComponent* PaintComponent = HitActor->GetComponentByClass<UPaintableActorComponent>();
+			if (PaintComponent)
 			{
 				//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->OnPaintHit(UV);
-				Hit.GetActor()->GetComponentByClass<UPaintableActorComponent>()->GetPercentPainted();
+				PaintComponent->OnPaintHit(UV);
+				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	
 		}
 	}
@@ -177,5 +155,10 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 void APaintGameCharacter::PaintCharacterJump(const FInputActionValue& value)
 {
 	APaintGameCharacter::Jump();
+}
+
+void APaintGameCharacter::TriggerRTUpdates(const FInputActionValue& value)
+{
+	PaintGameManager->ProcessRTPool();
 }
 

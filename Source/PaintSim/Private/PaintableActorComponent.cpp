@@ -59,9 +59,7 @@ void UPaintableActorComponent::InitializeComponent()
 		RenderTarget->bAutoGenerateMips = true;
 		RenderTarget->InitCustomFormat(512, 512, PF_B8G8R8A8, false);
 		RenderTarget->ClearColor = FColor::Black;
-		RenderTarget->MipGenSettings = TMGS_SimpleAverage;
 		RenderTarget->MipsSamplerFilter = TF_Trilinear;
-		//RenderTarget->MipLoadOptions = ETextureMipLoadOptions::AllMips;
 		UE_LOG(LogTemp, Warning, TEXT("%i"), RenderTarget->GetNumMips());
 
 		//RenderTarget->mip
@@ -100,7 +98,7 @@ void UPaintableActorComponent::OnPaintHit(FVector2D UV)
 	{
 		PaintMaterial->SetVectorParameterValue("UV", FVector(UV.X, UV.Y, 0.0f));
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
-		PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
+		//PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
 	}
 	else
 	{

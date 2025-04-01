@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "PaintGameCharacter.generated.h"
 
+class APaintGameManager;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
@@ -44,13 +45,18 @@ private:
 	UFUNCTION() void Paint(const FInputActionValue& value);
 	UFUNCTION() void PaintCharacterJump(const FInputActionValue& value);
 
+	//Render Texture Pooling
+	UFUNCTION() void TriggerRTUpdates(const FInputActionValue& value);
+	
 	// Input
 	UPROPERTY(EditAnywhere, Category="Input") UInputMappingContext* MappingContext;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* PaintAction;
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* JumpAction;
-
+	
+	UPROPERTY(EditAnywhere, Category = "Paint") APaintGameManager* PaintGameManager;
+	
 	// Camera
-	UPROPERTY(VisibleAnywhere, Category="Input") UCameraComponent* GameCamera;
+	UPROPERTY(VisibleAnywhere) UCameraComponent* GameCamera;
 };

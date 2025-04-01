@@ -76,3 +76,25 @@ float APaintGameManager::GetPercentCompletionValue(FVector2D ID)
 	return value.R;
 }
 
+void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintComponent)
+{
+	PaintedObjectsPool.AddUnique(PaintComponent);
+}
+
+void APaintGameManager::ProcessRTPool()
+{
+	for (int i = 0; i < PaintedObjectsPool.Num(); i++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintedObjectsPool[i]->GetName());
+		UpdateCompletionStateRT(PaintedObjectsPool[i]->CompletionPercentID, PaintedObjectsPool[i]->GetRenderTarget());
+	}
+
+	for (int i = 0; i < PaintedObjectsPool.Num(); i++)
+	{
+		PaintedObjectsPool.RemoveAt(i);
+		i--;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%i"), PaintedObjectsPool.Num());
+}
+
