@@ -3,6 +3,7 @@
 
 #include "PaintableActorComponent.h"
 
+#include "GenerateMips.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/BlueprintTypeConversions.h"
 #include "Kismet/GameplayStatics.h"
@@ -54,14 +55,17 @@ void UPaintableActorComponent::InitializeComponent()
 	RenderTarget = NewObject<UTextureRenderTarget2D>();
 	if(RenderTarget)
 	{
+		//RenderTarget->UpdateResourceImmediate();
+		RenderTarget->bAutoGenerateMips = true;
 		RenderTarget->InitCustomFormat(512, 512, PF_B8G8R8A8, false);
 		RenderTarget->ClearColor = FColor::Black;
 		RenderTarget->MipGenSettings = TMGS_SimpleAverage;
 		RenderTarget->MipsSamplerFilter = TF_Trilinear;
-		RenderTarget->bAutoGenerateMips = true;
+		//RenderTarget->MipLoadOptions = ETextureMipLoadOptions::AllMips;
+		UE_LOG(LogTemp, Warning, TEXT("%i"), RenderTarget->GetNumMips());
 
 		//RenderTarget->mip
-		RenderTarget->UpdateResourceImmediate(true);
+		RenderTarget->UpdateResourceImmediate();
 		UE_LOG(LogTemp, Warning, TEXT("RENDERTEXTURE INITIALIZED"));
 	}
 
@@ -77,7 +81,7 @@ void UPaintableActorComponent::InitializeComponent()
 	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
 	//UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), CompletionPercentID.X, CompletionPercentID.Y);
 	
-	UE_LOG(LogTemp, Warning, TEXT("INITIALIZATION SUCCESSFUL"));
+	//UE_LOG(LogTemp, Warning, TEXT("INITIALIZATION SUCCESSFUL"));
 	
 }
 
@@ -96,7 +100,7 @@ void UPaintableActorComponent::OnPaintHit(FVector2D UV)
 	{
 		PaintMaterial->SetVectorParameterValue("UV", FVector(UV.X, UV.Y, 0.0f));
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
-		PaintGameManager->UpdateCompletionStateRT(this->CompletionPercentID, RenderTarget);
+		PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
 	}
 	else
 	{

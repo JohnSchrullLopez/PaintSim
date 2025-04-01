@@ -50,7 +50,7 @@ FVector2D APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* P
 		return FVector2D::ZeroVector;
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s registered"), *PaintComponent->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("%s registered"), *PaintComponent->GetName());
 
 	//Convert 1D ID value to 2D
 	FVector2D GeneratedID = FVector2D(CurrentID % CompletionStateRT->SizeX, std::floor(CurrentID / CompletionStateRT->SizeX));
@@ -62,12 +62,11 @@ void APaintGameManager::UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarg
 {
 	if (CompletionStateRT && CompletionMaterialInstance)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), ID.X, ID.Y);
 		CompletionMaterialInstance->SetVectorParameterValue("ID", FVector4(ID.X, ID.Y, 0, 0));
 		CompletionMaterialInstance->SetScalarParameterValue("RTSize", CompletionStateRT->SizeX);
 		CompletionMaterialInstance->SetTextureParameterValue("ObjectMask", ObjectMask);
+		
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), CompletionStateRT, CompletionMaterialInstance);
-		UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), ID.X, ID.Y);
 	}
 }
 
