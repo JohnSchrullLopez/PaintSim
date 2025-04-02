@@ -49,8 +49,6 @@ FVector2D APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* P
 		UE_LOG(LogTemp, Warning, TEXT("ERROR: OUT OF BOUNDS. INCREASE RENDER TEXTURE SIZE"));
 		return FVector2D::ZeroVector;
 	}
-	
-	//UE_LOG(LogTemp, Warning, TEXT("%s registered"), *PaintComponent->GetName());
 
 	//Convert 1D ID value to 2D
 	FVector2D GeneratedID = FVector2D(CurrentID % CompletionStateRT->SizeX, std::floor(CurrentID / CompletionStateRT->SizeX));
@@ -85,16 +83,9 @@ void APaintGameManager::ProcessRTPool()
 {
 	for (int i = 0; i < PaintedObjectsPool.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintedObjectsPool[i]->GetName());
 		UpdateCompletionStateRT(PaintedObjectsPool[i]->CompletionPercentID, PaintedObjectsPool[i]->GetRenderTarget());
-	}
-
-	for (int i = 0; i < PaintedObjectsPool.Num(); i++)
-	{
 		PaintedObjectsPool.RemoveAt(i);
 		i--;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%i"), PaintedObjectsPool.Num());
 }
 

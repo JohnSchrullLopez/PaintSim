@@ -119,7 +119,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	TraceParams.bReturnFaceIndex = true;
 	TraceParams.TraceTag = FName("DebugRay");
 
-	//GetWorld()->DebugDrawTraceTag = FName("DebugRay");
+	GetWorld()->DebugDrawTraceTag = FName("DebugRay");
 
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
@@ -127,7 +127,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	FVector2D UV(0.0f, 0.0f);
 	bool Ray;
 	FVector rayDirection;
-	float offset = (RayWidth * 2) / 10;
+	float offset = (RayWidth * 2) / RayResolution;
 	
 	for (int i = 0; i < RayResolution; i++)
 	{
@@ -144,8 +144,9 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			UPaintableActorComponent* PaintComponent = HitActor->GetComponentByClass<UPaintableActorComponent>();
 			if (PaintComponent)
 			{
-				//UE_LOG(LogTemp, Display, TEXT("PAINT COMPONENT FOUND"));
-				PaintComponent->OnPaintHit(UV);
+				float scale = HitActor->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
+				//UE_LOG(LogTemp, Warning, TEXT("BOUNDS: %f"), HitActor->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length());
+				PaintComponent->OnPaintHit(UV, 1 / scale);
 				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	
 		}

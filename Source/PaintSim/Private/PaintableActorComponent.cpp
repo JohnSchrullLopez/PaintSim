@@ -92,13 +92,13 @@ void UPaintableActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UPaintableActorComponent::OnPaintHit(FVector2D UV)
+void UPaintableActorComponent::OnPaintHit(FVector2D UV, float ScaleFactor)
 {
 	if (IsValid(RenderTarget) && IsValid(PaintableObjectMaterial))
 	{
 		PaintMaterial->SetVectorParameterValue("UV", FVector(UV.X, UV.Y, 0.0f));
+		PaintMaterial->SetScalarParameterValue("Scale", ScaleFactor);
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
-		//PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
 	}
 	else
 	{

@@ -35,7 +35,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION() void OnPaintHit(FVector2D UV);
+	UFUNCTION() void OnPaintHit(FVector2D UV,float ScaleFactor);
 	UFUNCTION() float GetPercentPainted();
 	FORCEINLINE void SetID(const FVector2D ID) { CompletionPercentID = ID; }
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
@@ -44,6 +44,6 @@ public:
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
-	UPROPERTY(EditAnywhere, Category="Paint") APaintGameManager* PaintGameManager;
+	UPROPERTY() APaintGameManager* PaintGameManager;
 	UPROPERTY(VisibleAnywhere) FVector2D CompletionPercentID;
 };
