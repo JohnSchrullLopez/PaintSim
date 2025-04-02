@@ -57,7 +57,7 @@ void UPaintableActorComponent::InitializeComponent()
 	{
 		//RenderTarget->UpdateResourceImmediate();
 		RenderTarget->bAutoGenerateMips = true;
-		RenderTarget->InitCustomFormat(512, 512, PF_B8G8R8A8, false);
+		RenderTarget->InitCustomFormat(1024, 1024, PF_B8G8R8A8, false);
 		RenderTarget->ClearColor = FColor::Black;
 		RenderTarget->MipsSamplerFilter = TF_Trilinear;
 		UE_LOG(LogTemp, Warning, TEXT("%i"), RenderTarget->GetNumMips());
