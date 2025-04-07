@@ -119,7 +119,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	TraceParams.bReturnFaceIndex = true;
 	TraceParams.TraceTag = FName("DebugRay");
 
-	//GetWorld()->DebugDrawTraceTag = FName("DebugRay");
+	GetWorld()->DebugDrawTraceTag = FName("DebugRay");
 
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
