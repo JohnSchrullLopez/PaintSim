@@ -144,7 +144,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			UPaintableActorComponent* PaintComponent = HitActor->GetComponentByClass<UPaintableActorComponent>();
 			if (PaintComponent)
 			{
-				float scale = HitActor->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
+				float scale = PaintComponent->ObjectScale;
 				PaintComponent->OnPaintHit(UV, 1 / scale);
 				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	

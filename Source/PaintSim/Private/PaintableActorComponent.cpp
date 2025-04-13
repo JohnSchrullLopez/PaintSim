@@ -19,7 +19,6 @@ UPaintableActorComponent::UPaintableActorComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
 	// ...
 }
 
@@ -77,10 +76,8 @@ void UPaintableActorComponent::InitializeComponent()
 	SetID(PaintGameManager->RegisterPaintableObject(this));
 	PaintGameManager->GetPercentCompletionValue(CompletionPercentID);
 	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
-	//UE_LOG(LogTemp, Warning, TEXT("ID === %f , %f"), CompletionPercentID.X, CompletionPercentID.Y);
 	
-	//UE_LOG(LogTemp, Warning, TEXT("INITIALIZATION SUCCESSFUL"));
-	
+	ObjectScale = GetOwner()->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
 }
 
 
