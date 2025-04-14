@@ -68,6 +68,8 @@ void UPaintableActorComponent::InitializeComponent()
 
 	PaintableObjectMaterial = Mesh->CreateDynamicMaterialInstance(0, BasePaintableMaterial);
 	PaintableObjectMaterial->SetTextureParameterValue("BaseTexture", BaseTexture);
+	PaintableObjectMaterial->SetTextureParameterValue("ORM", ORMTexture);
+	PaintableObjectMaterial->SetTextureParameterValue("NormalMap", NormalTexture);
 	PaintableObjectMaterial->SetTextureParameterValue("RenderTarget", RenderTarget);
 
 	PaintMaterial = Mesh->CreateDynamicMaterialInstance(0, BasePaintMaterial);

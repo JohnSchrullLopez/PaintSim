@@ -42,6 +42,8 @@ public:
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }
 	
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
+	UPROPERTY(EditAnywhere) UTexture2D* ORMTexture;
+	UPROPERTY(EditAnywhere) UTexture2D* NormalTexture;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintMaterial;
 	UPROPERTY() APaintGameManager* PaintGameManager;
