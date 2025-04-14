@@ -42,7 +42,6 @@ void APaintGameCharacter::BeginPlay()
 	//Attach camera to mesh
 	GameCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 	GameCamera->bUsePawnControlRotation = true;
-	bUseControllerRotationPitch = true;
 	PaintGameManager = Cast<APaintGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APaintGameManager::StaticClass()));
 }
 
@@ -104,7 +103,6 @@ void APaintGameCharacter::MoveCharacter(const FInputActionValue& value)
 void APaintGameCharacter::Look(const FInputActionValue& value)
 {
 	const FVector2D lookAxisVector = value.Get<FVector2D>();
-
 	AddControllerPitchInput(lookAxisVector.Y);
 	AddControllerYawInput(lookAxisVector.X);
 }
@@ -119,7 +117,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	TraceParams.bReturnFaceIndex = true;
 	TraceParams.TraceTag = FName("DebugRay");
 
-	GetWorld()->DebugDrawTraceTag = FName("DebugRay");
+	//GetWorld()->DebugDrawTraceTag = FName("DebugRay");
 
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
@@ -128,14 +126,19 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	bool Ray;
 	FVector rayDirection;
 	float offset = (RayWidth * 2) / RayResolution;
+	UV = FVector2D::ZeroVector;
 	
 	for (int i = 0; i < RayResolution; i++)
 	{
-		UV = FVector2D::ZeroVector;
-
 		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
 		
 		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
+
+		if (UV != FVector2D::ZeroVector)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%i"), i);
+		}
+		
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
 		AActor* HitActor = Hit.GetActor();
 		
