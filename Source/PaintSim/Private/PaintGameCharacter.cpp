@@ -131,13 +131,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	for (int i = 0; i < RayResolution; i++)
 	{
 		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
-		
 		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
-
-		if (UV != FVector2D::ZeroVector)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%i"), i);
-		}
 		
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
 		AActor* HitActor = Hit.GetActor();
