@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PaintGameManager.generated.h"
 
+class UMaxPossiblePercentPainted;
 class UPaintableActorComponent;
 
 UCLASS()
@@ -27,14 +28,18 @@ public:
 
 	FVector2D RegisterPaintableObject(UPaintableActorComponent* PaintComponent);
 	UFUNCTION(BlueprintCallable) void UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarget2D* ObjectMask);
-	UFUNCTION(BlueprintCallable) float GetPercentCompletionValue(FVector2D ID);
-	
+	UFUNCTION(BlueprintCallable) float GetPercentCompletionValue(FVector2D ID, float TargetPercentage);
+	UFUNCTION(BlueprintCallable) float GetRawAmountPainted(FVector2D ID);
 	UFUNCTION() void AddRTToUpdatePool(UPaintableActorComponent* PaintComponent);
 	UFUNCTION() void ProcessRTPool();
+	
+	UFUNCTION(CallInEditor, Category="Paint Game Utilities") void SetMaxPercentCompletionValue();
 
 	UPROPERTY(EditAnywhere, Category="Paint") UMaterial* CalculationMaterialBase;
 	UPROPERTY(EditAnywhere, Category="Paint") UTextureRenderTarget2D* CompletionStateRT;
-	UPROPERTY() TArray<UPaintableActorComponent*> PaintedObjectsPool;
+	UPROPERTY(EditAnywhere, Category="Paint") UMaxPossiblePercentPainted* MaxPossiblePercentMap;
+	UPROPERTY() TArray<UPaintableActorComponent*> PaintableObjects;
+	UPROPERTY() TArray<UPaintableActorComponent*> RTToUpdatePool;
 
 private:
 	int CurrentID = 0;

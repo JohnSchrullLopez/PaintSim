@@ -3,7 +3,9 @@
 
 #include "Managers/PaintGameManager.h"
 
+#include "MaxPossiblePercentPainted.h"
 #include "PaintableActorComponent.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -53,6 +55,9 @@ FVector2D APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* P
 	//Convert 1D ID value to 2D
 	FVector2D GeneratedID = FVector2D(CurrentID % CompletionStateRT->SizeX, std::floor(CurrentID / CompletionStateRT->SizeX));
 	CurrentID++;
+
+	PaintableObjects.Add(PaintComponent);
+	
 	return GeneratedID;
 }
 
@@ -68,7 +73,13 @@ void APaintGameManager::UpdateCompletionStateRT(FVector2D ID, UTextureRenderTarg
 	}
 }
 
-float APaintGameManager::GetPercentCompletionValue(FVector2D ID)
+float APaintGameManager::GetPercentCompletionValue(FVector2D ID, float TargetPercentage)
+{
+	FColor value = UKismetRenderingLibrary::ReadRenderTargetPixel(GetWorld(), CompletionStateRT, ID.X, ID.Y);
+	return value.R / TargetPercentage;
+}
+
+float APaintGameManager::GetRawAmountPainted(FVector2D ID)
 {
 	FColor value = UKismetRenderingLibrary::ReadRenderTargetPixel(GetWorld(), CompletionStateRT, ID.X, ID.Y);
 	return value.R;
@@ -76,16 +87,30 @@ float APaintGameManager::GetPercentCompletionValue(FVector2D ID)
 
 void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintComponent)
 {
-	PaintedObjectsPool.AddUnique(PaintComponent);
+	RTToUpdatePool.AddUnique(PaintComponent);
 }
 
 void APaintGameManager::ProcessRTPool()
 {
-	for (int i = 0; i < PaintedObjectsPool.Num(); i++)
+	for (int i = 0; i < RTToUpdatePool.Num(); i++)
 	{
-		UpdateCompletionStateRT(PaintedObjectsPool[i]->CompletionPercentID, PaintedObjectsPool[i]->GetRenderTarget());
-		PaintedObjectsPool.RemoveAt(i);
+		UpdateCompletionStateRT(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->GetRenderTarget());
+		
+		float percentPainted = GetPercentCompletionValue(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->MaxPercentPaintedAmount);
+		UE_LOG(LogTemp, Warning, TEXT("%f"), percentPainted);
+		
+		RTToUpdatePool.RemoveAt(i);
 		i--;
 	}
+}
+
+void APaintGameManager::SetMaxPercentCompletionValue()
+{
+	for (int i = 0; i < PaintableObjects.Num(); i++)
+	{
+		PaintableObjects[i]->MaxPercentPaintedAmount = GetRawAmountPainted(PaintableObjects[i]->CompletionPercentID);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Remember to save simulation changes in editor!"))
 }
 

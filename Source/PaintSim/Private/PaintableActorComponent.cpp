@@ -77,7 +77,6 @@ void UPaintableActorComponent::InitializeComponent()
 	Mesh->SetMaterial(0, PaintableObjectMaterial);
 
 	SetID(PaintGameManager->RegisterPaintableObject(this));
-	PaintGameManager->GetPercentCompletionValue(CompletionPercentID);
 	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
 	
 	ObjectScale = GetOwner()->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
@@ -104,9 +103,4 @@ void UPaintableActorComponent::OnPaintHit(FVector2D UV, float ScaleFactor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("MATERIAL NOT INITIALIZED"));
 	}
-}
-
-float UPaintableActorComponent::GetPercentPainted()
-{
-	return PaintGameManager->GetPercentCompletionValue(CompletionPercentID);
 }

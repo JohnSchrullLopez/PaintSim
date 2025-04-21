@@ -36,11 +36,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION() void OnPaintHit(FVector2D UV, float ScaleFactor);
-	UFUNCTION() float GetPercentPainted();
 	FORCEINLINE void SetID(const FVector2D ID) { CompletionPercentID = ID; }
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }
 
+	UPROPERTY(VisibleAnywhere) float MaxPercentPaintedAmount;
 	UPROPERTY(EditAnywhere) uint16 RTSize = 1024; 
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
 	UPROPERTY(EditAnywhere) UTexture2D* PackedTexture;
