@@ -40,9 +40,10 @@ public:
 	FORCEINLINE void SetID(const FVector2D ID) { CompletionPercentID = ID; }
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }
-	
+
+	UPROPERTY(EditAnywhere) uint16 RTSize = 1024; 
 	UPROPERTY(EditAnywhere) UTexture2D* BaseTexture;
-	UPROPERTY(EditAnywhere) UTexture2D* ORMTexture;
+	UPROPERTY(EditAnywhere) UTexture2D* PackedTexture;
 	UPROPERTY(EditAnywhere) UTexture2D* NormalTexture;
 	UPROPERTY(EditAnywhere) UTexture2D* OpacityMask;
 	UPROPERTY(EditAnywhere) UMaterial* BasePaintableMaterial;
