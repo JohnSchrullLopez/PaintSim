@@ -35,13 +35,14 @@ void APaintGameManager::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *CompletionMaterialInstance->GetName());
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(RTUpdateTimerHandle, this, &APaintGameManager::TimerTest, RTUpdateFrequency, true);
 }
 
 // Called every frame
 void APaintGameManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 FVector2D APaintGameManager::RegisterPaintableObject(UPaintableActorComponent* PaintComponent)
@@ -88,21 +89,22 @@ float APaintGameManager::GetRawAmountPainted(FVector2D ID)
 
 void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintComponent)
 {
-	RTToUpdatePool.AddUnique(PaintComponent);
+	RTUpdateQueue.AddUnique(PaintComponent);
 }
 
 void APaintGameManager::ProcessRTPool()
 {
-	for (int i = 0; i < RTToUpdatePool.Num(); i++)
+	
+	for (int i = 0; i < RTUpdateQueue.Num(); i++)
 	{
-		UpdateCompletionStateRT(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->GetRenderTarget());
+		UpdateCompletionStateRT(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->GetRenderTarget());
 		
-		float percentPainted = GetPercentCompletionValue(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->MaxPercentPaintedAmount);
+		float percentPainted = GetPercentCompletionValue(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->MaxPercentPaintedAmount);
 		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OBJECT COMPLETELY PAINTED"));
-			RTToUpdatePool[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
-			PaintableObjects.Remove(RTToUpdatePool[i]);
+			RTUpdateQueue[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
+			PaintableObjects.Remove(RTUpdateQueue[i]);
 			
 			if (PaintableObjects.Num() <= 0)
 			{
@@ -115,7 +117,7 @@ void APaintGameManager::ProcessRTPool()
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[j]->GetOwner()->GetActorNameOrLabel());
 		}
 		
-		RTToUpdatePool.RemoveAt(i);
+		RTUpdateQueue.RemoveAt(i);
 		i--;
 	}
 }
@@ -128,5 +130,23 @@ void APaintGameManager::SetMaxPercentCompletionValue()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Remember to save simulation changes in editor!"))
+}
+
+void APaintGameManager::TimerTest()
+{
+	if (RTUpdateQueue.Num() <= 0) return;
+	UE_LOG(LogTemp, Warning, TEXT("TIMER CALLED"));
+
+	//UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
+	
+	float percentPainted = GetPercentCompletionValue(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->MaxPercentPaintedAmount);
+	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OBJECT COMPLETELY PAINTED"));
+		RTUpdateQueue[0]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s UPDATED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel());
+	RTUpdateQueue.RemoveAt(0);
 }
 

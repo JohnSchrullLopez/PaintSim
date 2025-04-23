@@ -39,9 +39,13 @@ public:
 	UPROPERTY(EditAnywhere, Category="Paint") UTextureRenderTarget2D* CompletionStateRT;
 	UPROPERTY(EditAnywhere, Category="Paint") float MinPercentToCountAsComplete;
 	UPROPERTY() TArray<UPaintableActorComponent*> PaintableObjects;
-	UPROPERTY() TArray<UPaintableActorComponent*> RTToUpdatePool;
+	UPROPERTY() TArray<UPaintableActorComponent*> RTUpdateQueue;
+	UPROPERTY(EditAnywhere, Category="Paint") float RTUpdateFrequency;
+
+	UFUNCTION() void TimerTest();
 
 private:
 	int CurrentID = 0;
 	UPROPERTY() UMaterialInstanceDynamic* CompletionMaterialInstance;
+	UPROPERTY() FTimerHandle RTUpdateTimerHandle;
 };
