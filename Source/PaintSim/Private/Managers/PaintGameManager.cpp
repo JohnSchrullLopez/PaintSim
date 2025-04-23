@@ -137,7 +137,7 @@ void APaintGameManager::TimerTest()
 	if (RTUpdateQueue.Num() <= 0) return;
 	UE_LOG(LogTemp, Warning, TEXT("TIMER CALLED"));
 
-	//UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
+	UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
 	
 	float percentPainted = GetPercentCompletionValue(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->MaxPercentPaintedAmount);
 	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
