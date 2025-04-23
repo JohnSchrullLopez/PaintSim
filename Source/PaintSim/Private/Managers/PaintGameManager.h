@@ -37,7 +37,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Paint") UMaterial* CalculationMaterialBase;
 	UPROPERTY(EditAnywhere, Category="Paint") UTextureRenderTarget2D* CompletionStateRT;
-	UPROPERTY(EditAnywhere, Category="Paint") UMaxPossiblePercentPainted* MaxPossiblePercentMap;
+	UPROPERTY(EditAnywhere, Category="Paint") float MinPercentToCountAsComplete;
 	UPROPERTY() TArray<UPaintableActorComponent*> PaintableObjects;
 	UPROPERTY() TArray<UPaintableActorComponent*> RTToUpdatePool;
 

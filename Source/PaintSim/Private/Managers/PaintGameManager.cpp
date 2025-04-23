@@ -17,6 +17,7 @@ APaintGameManager::APaintGameManager()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CurrentID = 0;
+	MinPercentToCountAsComplete = .9;
 }
 
 // Called when the game starts or when spawned
@@ -97,7 +98,22 @@ void APaintGameManager::ProcessRTPool()
 		UpdateCompletionStateRT(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->GetRenderTarget());
 		
 		float percentPainted = GetPercentCompletionValue(RTToUpdatePool[i]->CompletionPercentID, RTToUpdatePool[i]->MaxPercentPaintedAmount);
-		UE_LOG(LogTemp, Warning, TEXT("%f"), percentPainted);
+		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OBJECT COMPLETELY PAINTED"));
+			RTToUpdatePool[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
+			PaintableObjects.Remove(RTToUpdatePool[i]);
+			
+			if (PaintableObjects.Num() <= 0)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ALL OBJECT PAINTED"));
+			}
+		}
+
+		for (int j = 0; j < PaintableObjects.Num(); j++)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[j]->GetOwner()->GetActorNameOrLabel());
+		}
 		
 		RTToUpdatePool.RemoveAt(i);
 		i--;
