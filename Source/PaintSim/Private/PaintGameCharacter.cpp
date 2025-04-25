@@ -6,11 +6,15 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "MatrixTypes.h"
 #include "PaintableActorComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Field/FieldSystemNodes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Managers/PaintGameManager.h"
+#include "Math/UnitConversion.h"
 
 // Sets default values
 APaintGameCharacter::APaintGameCharacter()
@@ -127,11 +131,26 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	FVector rayDirection;
 	float offset = (RayWidth * 2) / RayResolution;
 	UV = FVector2D::ZeroVector;
+
+	FVector randVector;
+	FVector crossVector;
+	FVector crossVector2;
 	
 	for (int i = 0; i < RayResolution; i++)
 	{
 		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
 		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
+
+		randVector = UKismetMathLibrary::RandomUnitVector();
+		crossVector = FVector::CrossProduct(randVector, Hit.Normal);
+		crossVector.Normalize();
+		crossVector2 = FVector::CrossProduct(crossVector, Hit.Normal);
+		crossVector2.Normalize();
+
+		//DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  Hit.Normal * 5 + Hit.Location, .1, FColor::Red, true);
+		DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  crossVector * 5 + Hit.Location, .1, FColor::Blue, true);
+		DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  crossVector2 * 5 + Hit.Location, .1, FColor::Green, true);
+		//DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  randVector * 5 + Hit.Location, .1, FColor::Yellow, true);
 		
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
 		AActor* HitActor = Hit.GetActor();
