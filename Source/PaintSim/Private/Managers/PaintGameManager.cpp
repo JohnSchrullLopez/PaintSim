@@ -102,7 +102,6 @@ void APaintGameManager::ProcessRTPool()
 		float percentPainted = GetPercentCompletionValue(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->MaxPercentPaintedAmount);
 		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("OBJECT COMPLETELY PAINTED"));
 			RTUpdateQueue[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
 			PaintableObjects.Remove(RTUpdateQueue[i]);
 			
@@ -135,18 +134,15 @@ void APaintGameManager::SetMaxPercentCompletionValue()
 void APaintGameManager::TimerTest()
 {
 	if (RTUpdateQueue.Num() <= 0) return;
-	UE_LOG(LogTemp, Warning, TEXT("TIMER CALLED"));
 
 	UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
 	
 	float percentPainted = GetPercentCompletionValue(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->MaxPercentPaintedAmount);
 	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OBJECT COMPLETELY PAINTED"));
 		RTUpdateQueue[0]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%s UPDATED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel());
+	
 	RTUpdateQueue.RemoveAt(0);
 }
 

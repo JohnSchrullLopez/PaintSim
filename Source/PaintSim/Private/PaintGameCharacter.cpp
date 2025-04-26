@@ -114,6 +114,8 @@ void APaintGameCharacter::Look(const FInputActionValue& value)
 void APaintGameCharacter::Paint(const FInputActionValue& value)
 {
 	FHitResult Hit;
+	FHitResult HitCross;
+	FHitResult HitCross2;
 	
 	//Trace Parameters 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
@@ -126,13 +128,19 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	//Get Camera View Vector
 	FVector cameraLocation = GameCamera->GetComponentLocation();
 	FVector rayDirection_L = GameCamera->GetForwardVector().GetSafeNormal();
+	
 	FVector2D UV(0.0f, 0.0f);
+	FVector2D UVCross(0.0f, 0.0f);
+	FVector2D UVCross2(0.0f, 0.0f);
+	
 	bool Ray;
 	FVector rayDirection;
 	float offset = (RayWidth * 2) / RayResolution;
+	
 	UV = FVector2D::ZeroVector;
+	
 
-	FVector randVector;
+	FVector randVector = UKismetMathLibrary::RandomUnitVector();
 	FVector crossVector;
 	FVector crossVector2;
 	
@@ -140,19 +148,22 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	{
 		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
 		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
-
-		randVector = UKismetMathLibrary::RandomUnitVector();
+		
 		crossVector = FVector::CrossProduct(randVector, Hit.Normal);
 		crossVector.Normalize();
 		crossVector2 = FVector::CrossProduct(crossVector, Hit.Normal);
 		crossVector2.Normalize();
 
-		//DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  Hit.Normal * 5 + Hit.Location, .1, FColor::Red, true);
-		DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  crossVector * 5 + Hit.Location, .1, FColor::Blue, true);
-		DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  crossVector2 * 5 + Hit.Location, .1, FColor::Green, true);
-		//DrawDebugDirectionalArrow(GetWorld(), Hit.Location,  randVector * 5 + Hit.Location, .1, FColor::Yellow, true);
+		HitCross = FHitResult(Hit.GetActor(), Hit.GetComponent(), crossVector + Hit.Location, Hit.Normal);
+		HitCross2 = FHitResult(Hit.GetActor(), Hit.GetComponent(), crossVector2 + Hit.Location, Hit.Normal);
+
+		HitCross = UGameplayStatics::MakeHitResult(Hit.bBlockingHit, false, Hit.Time, Hit.Distance, Hit.Location + crossVector, Hit.Location + crossVector, Hit.Normal, Hit.ImpactNormal, nullptr, Hit.GetActor(), Hit.GetComponent(), Hit.BoneName, Hit.BoneName, Hit.Item, Hit.ElementIndex, Hit.FaceIndex, cameraLocation, cameraLocation + rayDirection * 1000);
+		HitCross2 = UGameplayStatics::MakeHitResult(Hit.bBlockingHit, false, Hit.Time, Hit.Distance, Hit.Location + crossVector2, Hit.Location + crossVector2, Hit.Normal, Hit.ImpactNormal, nullptr, Hit.GetActor(), Hit.GetComponent(), Hit.BoneName, Hit.BoneName, Hit.Item, Hit.ElementIndex, Hit.FaceIndex, cameraLocation, cameraLocation + rayDirection * 1000);
 		
 		UGameplayStatics::FindCollisionUV(Hit, 0, UV);
+		UGameplayStatics::FindCollisionUV(HitCross, 0, UVCross);
+		UGameplayStatics::FindCollisionUV(HitCross2, 0, UVCross2);
+		
 		AActor* HitActor = Hit.GetActor();
 		
 		if (Ray && HitActor)
@@ -160,8 +171,12 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			UPaintableActorComponent* PaintComponent = HitActor->GetComponentByClass<UPaintableActorComponent>();
 			if (PaintComponent)
 			{
-				float scale = PaintComponent->ObjectScale;
-				PaintComponent->OnPaintHit(UV, 1 / scale);
+				//float scale = PaintComponent->ObjectScale;
+				
+				FVector2D vectorResult((UVCross - UV).Length(), (UVCross2 - UV).Length());
+				float scale = vectorResult.Length();
+				
+				PaintComponent->OnPaintHit(UV, scale);
 				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	
 		}
@@ -175,6 +190,6 @@ void APaintGameCharacter::PaintCharacterJump(const FInputActionValue& value)
 
 void APaintGameCharacter::TriggerRTUpdates(const FInputActionValue& value)
 {
-	PaintGameManager->ProcessRTPool();
+	//PaintGameManager->ProcessRTPool();
 }
 
