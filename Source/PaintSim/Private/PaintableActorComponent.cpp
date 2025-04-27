@@ -91,12 +91,13 @@ void UPaintableActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UPaintableActorComponent::OnPaintHit(FVector2D UV, float ScaleFactor)
+void UPaintableActorComponent::OnPaintHit(FVector2D UV, float ScaleFactor, float Rotation)
 {
 	if (IsValid(RenderTarget) && IsValid(PaintableObjectMaterial))
 	{
 		PaintMaterial->SetVectorParameterValue("UV", FVector(UV.X, UV.Y, 0.0f));
 		PaintMaterial->SetScalarParameterValue("Scale", ScaleFactor);
+		PaintMaterial->SetScalarParameterValue("Rotation", Rotation);
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, PaintMaterial);
 	}
 	else

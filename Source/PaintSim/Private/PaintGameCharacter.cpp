@@ -138,7 +138,6 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	float offset = (RayWidth * 2) / RayResolution;
 	
 	UV = FVector2D::ZeroVector;
-	
 
 	FVector randVector = UKismetMathLibrary::RandomUnitVector();
 	FVector crossVector;
@@ -176,7 +175,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 				FVector2D vectorResult((UVCross - UV).Length(), (UVCross2 - UV).Length());
 				float scale = vectorResult.Length();
 				
-				PaintComponent->OnPaintHit(UV, scale);
+				PaintComponent->OnPaintHit(UV, scale, randVector.X);
 				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	
 		}
