@@ -35,7 +35,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION() void OnPaintHit(FVector2D UV, float ScaleFactor, float Rotation);
+	UFUNCTION() void OnPaintHit(FVector2D UV, float ScaleFactor, float Rotation, float SprayPower);
 	FORCEINLINE void SetID(const FVector2D ID) { CompletionPercentID = ID; }
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }

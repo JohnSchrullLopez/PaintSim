@@ -94,7 +94,7 @@ void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintCompone
 
 void APaintGameManager::ProcessRTPool()
 {
-	
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR("ProcessPool");
 	for (int i = 0; i < RTUpdateQueue.Num(); i++)
 	{
 		UpdateCompletionStateRT(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->GetRenderTarget());
