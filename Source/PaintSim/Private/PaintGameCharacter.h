@@ -56,6 +56,7 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input") UInputAction* JumpAction;
 	
 	UPROPERTY(EditAnywhere, Category = "Paint") APaintGameManager* PaintGameManager;
+	UPROPERTY(EditAnywhere, Category = "Paint") float SprayDistance;
 	
 	// Camera
 	UPROPERTY(VisibleAnywhere) UCameraComponent* GameCamera;

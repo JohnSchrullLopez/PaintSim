@@ -146,7 +146,7 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 	for (int i = 0; i < RayResolution; i++)
 	{
 		rayDirection = rayDirection_L.RotateAngleAxis(-RayWidth + offset * i, GameCamera->GetUpVector());
-		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * 1000, ECC_WorldDynamic, TraceParams);
+		Ray = GetWorld()->LineTraceSingleByChannel(Hit, cameraLocation, cameraLocation + rayDirection * SprayDistance, ECC_WorldDynamic, TraceParams);
 		
 		crossVector = FVector::CrossProduct(randVector, Hit.Normal);
 		crossVector.Normalize();
