@@ -3,9 +3,7 @@
 
 #include "Managers/PaintGameManager.h"
 
-#include "MaxPossiblePercentPainted.h"
 #include "PaintableActorComponent.h"
-#include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -89,7 +87,10 @@ float APaintGameManager::GetRawAmountPainted(FVector2D ID)
 
 void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintComponent)
 {
-	RTUpdateQueue.AddUnique(PaintComponent);
+	if (PaintableObjects.Contains(PaintComponent))
+	{
+		RTUpdateQueue.AddUnique(PaintComponent);	
+	}
 }
 
 void APaintGameManager::ProcessRTPool()
@@ -100,7 +101,7 @@ void APaintGameManager::ProcessRTPool()
 		UpdateCompletionStateRT(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->GetRenderTarget());
 		
 		float percentPainted = GetPercentCompletionValue(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->MaxPercentPaintedAmount);
-		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
+		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 2.0f))
 		{
 			RTUpdateQueue[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
 			PaintableObjects.Remove(RTUpdateQueue[i]);
@@ -121,6 +122,23 @@ void APaintGameManager::ProcessRTPool()
 	}
 }
 
+void APaintGameManager::CheckForGameCompletion()
+{
+	if (PaintableObjects.Num() <= 0)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
+	}
+	/*
+	else
+	{
+		for (int i = 0; i < PaintableObjects.Num(); i++)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[i]->GetOwner()->GetActorNameOrLabel());
+		}
+	}
+	*/
+}
+
 void APaintGameManager::SetMaxPercentCompletionValue()
 {
 	for (int i = 0; i < PaintableObjects.Num(); i++)
@@ -133,14 +151,22 @@ void APaintGameManager::SetMaxPercentCompletionValue()
 
 void APaintGameManager::TimerTest()
 {
-	if (RTUpdateQueue.Num() <= 0) return;
+	if (RTUpdateQueue.Num() <= 0 || PaintableObjects.Num() <= 0) return;
 
 	UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
 	
 	float percentPainted = GetPercentCompletionValue(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->MaxPercentPaintedAmount);
-	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 1.2f))
+	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 200.0f))
 	{
+		int indexInPaintableObjects = PaintableObjects.Find(RTUpdateQueue[0]);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[indexInPaintableObjects]->GetOwner()->GetActorNameOrLabel());
+		
 		RTUpdateQueue[0]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("%s PAINTED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel()));
+		
+		PaintableObjects.RemoveAt(indexInPaintableObjects);
+		UE_LOG(LogTemp, Warning, TEXT("%i"), PaintableObjects.Num());
+		CheckForGameCompletion();
 	}
 	
 	RTUpdateQueue.RemoveAt(0);

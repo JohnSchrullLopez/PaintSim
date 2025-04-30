@@ -170,13 +170,10 @@ void APaintGameCharacter::Paint(const FInputActionValue& value)
 			UPaintableActorComponent* PaintComponent = HitActor->GetComponentByClass<UPaintableActorComponent>();
 			if (PaintComponent)
 			{
-				//float scale = PaintComponent->ObjectScale;
-				
 				FVector2D vectorResult((UVCross - UV).Length(), (UVCross2 - UV).Length());
 				float scale = vectorResult.Length();
 				
 				PaintComponent->OnPaintHit(UV, scale, randVector.X, 50 / Hit.Distance);
-				UE_LOG(LogTemp, Warning, TEXT("%f"), 50 / Hit.Distance);
 				PaintGameManager->AddRTToUpdatePool(PaintComponent);
 			}	
 		}

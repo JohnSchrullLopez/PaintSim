@@ -32,6 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable) float GetRawAmountPainted(FVector2D ID);
 	UFUNCTION() void AddRTToUpdatePool(UPaintableActorComponent* PaintComponent);
 	UFUNCTION() void ProcessRTPool();
+	UFUNCTION() void CheckForGameCompletion();
 	
 	UFUNCTION(CallInEditor, Category="Paint Game Utilities") void SetMaxPercentCompletionValue();
 
