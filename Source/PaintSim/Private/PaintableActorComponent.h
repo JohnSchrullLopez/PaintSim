@@ -40,6 +40,8 @@ public:
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }
 	FORCEINLINE UMaterialInstanceDynamic* GetBasePaintMaterial() { return PaintableObjectMaterial; }
+	UFUNCTION() void PlayCompletionAnimation();
+	UFUNCTION() void UpdateCompletionAnimation();
 
 	UPROPERTY(VisibleAnywhere) float MaxPercentPaintedAmount;
 	UPROPERTY(EditAnywhere) uint16 RTSize = 1024; 
@@ -52,4 +54,9 @@ public:
 	UPROPERTY() APaintGameManager* PaintGameManager;
 	UPROPERTY(VisibleAnywhere) FVector2D CompletionPercentID;
 	UPROPERTY() float ObjectScale = 1;
+	UPROPERTY() FTimerHandle AnimHandle;
+	UPROPERTY() float AnimUpdateRate;
+	float EmissiveValue = 0;
+	float timer = 0;
+	bool IsAnimUpdating = false;
 };

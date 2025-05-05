@@ -126,7 +126,7 @@ void APaintGameManager::CheckForGameCompletion()
 {
 	if (PaintableObjects.Num() <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
+		//GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
 	}
 	/*
 	else
@@ -162,10 +162,10 @@ void APaintGameManager::TimerTest()
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[indexInPaintableObjects]->GetOwner()->GetActorNameOrLabel());
 		
 		RTUpdateQueue[0]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("%s PAINTED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel()));
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("%s PAINTED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel()));
 		
 		PaintableObjects.RemoveAt(indexInPaintableObjects);
-		UE_LOG(LogTemp, Warning, TEXT("%i"), PaintableObjects.Num());
+		RTUpdateQueue[0]->PlayCompletionAnimation();
 		CheckForGameCompletion();
 	}
 	

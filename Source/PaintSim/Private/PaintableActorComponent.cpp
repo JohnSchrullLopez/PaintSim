@@ -78,8 +78,8 @@ void UPaintableActorComponent::InitializeComponent()
 
 	SetID(PaintGameManager->RegisterPaintableObject(this));
 	PaintGameManager->UpdateCompletionStateRT(CompletionPercentID, RenderTarget);
-	
-	ObjectScale = GetOwner()->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
+	AnimUpdateRate = .05;
+	//ObjectScale = GetOwner()->GetComponentByClass<UStaticMeshComponent>()->Bounds.GetBox().GetSize().Length();
 }
 
 
@@ -104,5 +104,28 @@ void UPaintableActorComponent::OnPaintHit(FVector2D UV, float ScaleFactor, float
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("MATERIAL NOT INITIALIZED"));
+	}
+}
+
+void UPaintableActorComponent::PlayCompletionAnimation()
+{
+	GetWorld()->GetTimerManager().SetTimer(AnimHandle, this, &UPaintableActorComponent::UpdateCompletionAnimation, AnimUpdateRate, true);
+}
+
+void UPaintableActorComponent::UpdateCompletionAnimation()
+{
+	timer += 100 * GetWorld()->GetDeltaSeconds() * AnimUpdateRate;
+	float a = FMath::Sin(timer);
+
+	EmissiveValue = FMath::InterpEaseIn(0.0, .5, a, 3.0);
+	
+	UE_LOG(LogTemp, Warning, TEXT("%f"), EmissiveValue);
+	PaintableObjectMaterial->SetScalarParameterValue("Shine", EmissiveValue);
+	
+	if (EmissiveValue <= 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AnimHandle);
+		UE_LOG(LogTemp, Warning, TEXT("COMPLETING"));
+		timer = 0;
 	}
 }
