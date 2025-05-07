@@ -40,7 +40,7 @@ public:
 	FORCEINLINE APaintGameManager* GetPaintGameManager() { return PaintGameManager; }
 	FORCEINLINE UTextureRenderTarget2D* GetRenderTarget() { return RenderTarget; }
 	FORCEINLINE UMaterialInstanceDynamic* GetBasePaintMaterial() { return PaintableObjectMaterial; }
-	UFUNCTION() void PlayCompletionAnimation();
+	UFUNCTION(BlueprintCallable) void PlayCompletionAnimation();
 	UFUNCTION() void UpdateCompletionAnimation();
 
 	UPROPERTY(VisibleAnywhere) float MaxPercentPaintedAmount;
