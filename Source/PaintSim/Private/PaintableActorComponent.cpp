@@ -119,13 +119,11 @@ void UPaintableActorComponent::UpdateCompletionAnimation()
 
 	EmissiveValue = FMath::InterpEaseIn(0.0, .5, a, 3.0);
 	
-	UE_LOG(LogTemp, Warning, TEXT("%f"), EmissiveValue);
 	PaintableObjectMaterial->SetScalarParameterValue("Shine", EmissiveValue);
 	
 	if (EmissiveValue <= 0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(AnimHandle);
-		UE_LOG(LogTemp, Warning, TEXT("COMPLETING"));
 		timer = 0;
 	}
 }

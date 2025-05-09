@@ -5,6 +5,7 @@
 
 #include "PaintableActorComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
@@ -126,17 +127,9 @@ void APaintGameManager::CheckForGameCompletion()
 {
 	if (PaintableObjects.Num() <= 0)
 	{
-		//GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
+		GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
-	/*
-	else
-	{
-		for (int i = 0; i < PaintableObjects.Num(); i++)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[i]->GetOwner()->GetActorNameOrLabel());
-		}
-	}
-	*/
 }
 
 void APaintGameManager::SetMaxPercentCompletionValue()
