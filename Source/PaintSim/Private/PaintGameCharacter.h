@@ -30,7 +30,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -57,7 +56,6 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Paint") APaintGameManager* PaintGameManager;
 	UPROPERTY(EditAnywhere, Category = "Paint") float SprayDistance;
-	
 	// Camera
 	UPROPERTY(VisibleAnywhere) UCameraComponent* GameCamera;
 };

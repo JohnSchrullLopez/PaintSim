@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PaintGameManager.generated.h"
 
-class UMaxPossiblePercentPainted;
+//class UMaxPossiblePercentPainted;
 class UPaintableActorComponent;
 
 UCLASS()
