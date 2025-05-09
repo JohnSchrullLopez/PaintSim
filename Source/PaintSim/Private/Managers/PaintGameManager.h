@@ -43,7 +43,11 @@ public:
 	UPROPERTY() TArray<UPaintableActorComponent*> RTUpdateQueue;
 	UPROPERTY(EditAnywhere, Category="Paint") float RTUpdateFrequency;
 
-	UFUNCTION() void TimerTest();
+	//UI
+	UPROPERTY(EditAnywhere) TSubclassOf<UUserWidget> WinScreenWidgetClass;
+	UPROPERTY() UUserWidget* WinScreenWidget;
+	
+	//UFUNCTION() void TimerTest();
 
 private:
 	int CurrentID = 0;

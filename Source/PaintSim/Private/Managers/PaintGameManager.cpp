@@ -4,6 +4,7 @@
 #include "Managers/PaintGameManager.h"
 
 #include "PaintableActorComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -35,7 +36,7 @@ void APaintGameManager::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *CompletionMaterialInstance->GetName());
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(RTUpdateTimerHandle, this, &APaintGameManager::TimerTest, RTUpdateFrequency, true);
+	GetWorld()->GetTimerManager().SetTimer(RTUpdateTimerHandle, this, &APaintGameManager::ProcessRTPool, RTUpdateFrequency, true);
 }
 
 // Called every frame
@@ -96,39 +97,38 @@ void APaintGameManager::AddRTToUpdatePool(UPaintableActorComponent* PaintCompone
 
 void APaintGameManager::ProcessRTPool()
 {
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR("ProcessPool");
-	for (int i = 0; i < RTUpdateQueue.Num(); i++)
-	{
-		UpdateCompletionStateRT(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->GetRenderTarget());
-		
-		float percentPainted = GetPercentCompletionValue(RTUpdateQueue[i]->CompletionPercentID, RTUpdateQueue[i]->MaxPercentPaintedAmount);
-		if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 2.0f))
-		{
-			RTUpdateQueue[i]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
-			PaintableObjects.Remove(RTUpdateQueue[i]);
-			
-			if (PaintableObjects.Num() <= 0)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ALL OBJECT PAINTED"));
-			}
-		}
+	if (RTUpdateQueue.Num() <= 0 || PaintableObjects.Num() <= 0) return;
 
-		for (int j = 0; j < PaintableObjects.Num(); j++)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[j]->GetOwner()->GetActorNameOrLabel());
-		}
+	UpdateCompletionStateRT(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->GetRenderTarget());
+	
+	float percentPainted = GetPercentCompletionValue(RTUpdateQueue[0]->CompletionPercentID, RTUpdateQueue[0]->MaxPercentPaintedAmount);
+	if (FMath::IsWithin(percentPainted, MinPercentToCountAsComplete, 200.0f))
+	{
+		int indexInPaintableObjects = PaintableObjects.Find(RTUpdateQueue[0]);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *PaintableObjects[indexInPaintableObjects]->GetOwner()->GetActorNameOrLabel());
 		
-		RTUpdateQueue.RemoveAt(i);
-		i--;
+		RTUpdateQueue[0]->GetBasePaintMaterial()->SetScalarParameterValue("IsFullyPainted", 1.0f);
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("%s PAINTED"), *RTUpdateQueue[0]->GetOwner()->GetActorNameOrLabel()));
+		
+		PaintableObjects.RemoveAt(indexInPaintableObjects);
+		RTUpdateQueue[0]->PlayCompletionAnimation();
+		CheckForGameCompletion();
 	}
+	
+	RTUpdateQueue.RemoveAt(0);
 }
 
 void APaintGameManager::CheckForGameCompletion()
 {
 	if (PaintableObjects.Num() <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		//GEngine->AddOnScreenDebugMessage(1, 10, FColor::Red, TEXT("ALL OBJECTS PAINTED"));
+		//UGameplayStatics::SetGamePaused(GetWorld(), true);
+		APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		WinScreenWidget = CreateWidget<UUserWidget>(playerController, WinScreenWidgetClass);
+		WinScreenWidget->AddToViewport();
+		playerController->SetShowMouseCursor(true);
+		//playerController->SetInputMode(FInputModeUIOnly);
 	}
 }
 
@@ -141,7 +141,7 @@ void APaintGameManager::SetMaxPercentCompletionValue()
 
 	UE_LOG(LogTemp, Warning, TEXT("Remember to save simulation changes in editor!"))
 }
-
+/*
 void APaintGameManager::TimerTest()
 {
 	if (RTUpdateQueue.Num() <= 0 || PaintableObjects.Num() <= 0) return;
@@ -163,5 +163,5 @@ void APaintGameManager::TimerTest()
 	}
 	
 	RTUpdateQueue.RemoveAt(0);
-}
+}*/
 
