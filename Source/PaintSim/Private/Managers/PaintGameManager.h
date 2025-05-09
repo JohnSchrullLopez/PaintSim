@@ -46,8 +46,6 @@ public:
 	//UI
 	UPROPERTY(EditAnywhere) TSubclassOf<UUserWidget> WinScreenWidgetClass;
 	UPROPERTY() UUserWidget* WinScreenWidget;
-	
-	//UFUNCTION() void TimerTest();
 
 private:
 	int CurrentID = 0;
